@@ -1,0 +1,55 @@
+version: '3.9'
+
+services:
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    command: >
+      sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./web-client:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    image: python:3.11-slim
+    working_dir: /app
+    command: >
+      sh -c "pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server-api:/app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    build:
+      context: ./docker/db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: geoai
+    ports:
+      - "5436:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:

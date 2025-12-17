@@ -1,0 +1,36 @@
+{
+  "features": [
+    {
+      "id": 1,
+      "name": "普朗铜矿",
+      "type": "特大型露天",
+      "coordinates": [99.9, 28.03],
+      "height": 3500,
+      "description": "中国最大的印支期斑岩铜矿之一。"
+    },
+    {
+      "id": 2,
+      "name": "大红山铜矿",
+      "type": "在产矿山",
+      "coordinates": [101.9, 24.1],
+      "height": 1200,
+      "description": "大型铁铜矿床，地下开采。"
+    },
+    {
+      "id": 3,
+      "name": "玉龙雪山靶区",
+      "type": "预测靶区",
+      "coordinates": [100.20, 27.10],
+      "height": 5000,
+      "description": "根据遥感解译发现的蚀变异常区。"
+    },
+    {
+      "id": 4,
+      "name": "ZK-2023-05",
+      "type": "钻孔",
+      "coordinates": [101.92, 24.11],
+      "height": 1200,
+      "description": "勘探钻孔，孔深800米。"
+    }
+  ]
+}

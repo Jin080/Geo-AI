@@ -1,0 +1,45 @@
+from fastapi import APIRouter
+
+router = APIRouter(prefix="/api", tags=["spatial-data"])
+
+
+@router.get("/mines")
+async def list_mines_geojson():
+    """
+    Mock GeoJSON for 3D mineral prospects/mines.
+    """
+    return {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "id": "plang-cu",
+                    "name": "普朗铜矿",
+                    "type": "铜矿",
+                    "elevation": 3200,
+                },
+                "geometry": {"type": "Point", "coordinates": [98.615, 24.876]},
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "id": "dhs",
+                    "name": "大红山",
+                    "type": "多金属矿",
+                    "elevation": 3800,
+                },
+                "geometry": {"type": "Point", "coordinates": [97.769, 24.987]},
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "id": "yulong",
+                    "name": "玉龙雪山靶区",
+                    "type": "找矿靶区",
+                    "elevation": 4300,
+                },
+                "geometry": {"type": "Point", "coordinates": [100.236, 27.104]},
+            },
+        ],
+    }
