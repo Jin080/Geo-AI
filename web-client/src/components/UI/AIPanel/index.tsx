@@ -1,20 +1,22 @@
 import { useMemo, useState } from 'react';
 import { useDifyChat } from '@/hooks/useDifyChat';
+import { Bot, Minimize2, Send, Sparkles, Maximize2 } from 'lucide-react';
 
 type ChatBubbleProps = {
   role: 'user' | 'assistant' | 'system';
   content: string;
 };
 
+// 聊天气泡
 const ChatBubble = ({ role, content }: ChatBubbleProps) => {
   const isUser = role === 'user';
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-2`}>
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3`}>
       <div
-        className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
+        className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${
           isUser
-            ? 'bg-gradient-to-r from-sky-500 to-cyan-400 text-white'
-            : 'bg-white/10 text-gray-100 border border-white/10 backdrop-blur'
+            ? 'bg-blue-600 text-white rounded-br-none'
+            : 'bg-slate-800/90 text-slate-100 border border-white/10 backdrop-blur-md rounded-bl-none'
         }`}
       >
         {content}
@@ -23,9 +25,16 @@ const ChatBubble = ({ role, content }: ChatBubbleProps) => {
   );
 };
 
+// 聊天记录列表
 const ChatHistory = ({ messages }: { messages: ChatBubbleProps[] }) => {
   return (
-    <div className="flex flex-col h-full overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 pr-1">
+    <div className="flex flex-col h-full overflow-y-auto pr-2 space-y-2 custom-scrollbar">
+      {messages.length === 0 && (
+        <div className="text-slate-400 text-sm text-center mt-10">
+          <Sparkles className="w-8 h-8 mx-auto mb-2 opacity-50 text-blue-400" />
+          <p>我是地质 AI 助手，<br/>您可以让我定位矿区或查询数据。</p>
+        </div>
+      )}
       {messages.map((m, idx) => (
         <ChatBubble key={idx} role={m.role} content={m.content} />
       ))}
@@ -33,6 +42,7 @@ const ChatHistory = ({ messages }: { messages: ChatBubbleProps[] }) => {
   );
 };
 
+// 输入框
 const ChatInput = ({
   onSend,
   loading
@@ -43,7 +53,7 @@ const ChatInput = ({
   const [text, setText] = useState('');
   return (
     <form
-      className="flex items-center gap-2"
+      className="flex items-center gap-2 mt-auto pt-3 border-t border-white/10"
       onSubmit={(e) => {
         e.preventDefault();
         if (!text.trim()) return;
@@ -52,54 +62,67 @@ const ChatInput = ({
       }}
     >
       <input
-        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/60"
-        placeholder="用自然语言控制视角，如：飞到普朗铜矿"
+        className="flex-1 bg-slate-900/60 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 transition-all"
+        placeholder="输入指令，如：飞到普朗铜矿"
         value={text}
         onChange={(e) => setText(e.target.value)}
+        disabled={loading}
       />
       <button
         type="submit"
-        disabled={loading}
-        className="px-3 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+        disabled={loading || !text.trim()}
+        className="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg"
       >
-        发送
+        <Send size={18} />
       </button>
     </form>
   );
 };
 
+// 主面板组件
 const AIPanel = () => {
   const chat = useDifyChat();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(false); // 控制最小化
 
   const history = useMemo(
     () => chat.messages.map((m) => ({ role: m.role, content: m.content })),
     [chat.messages]
   );
 
+  // --- 状态 1: 最小化 (悬浮球) ---
   if (collapsed) {
     return (
       <button
-        className="pointer-events-auto fixed left-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-gradient-to-br from-slate-800/80 to-slate-700/80 border border-white/10 shadow-lg shadow-cyan-500/30 text-white"
+        className="w-14 h-14 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.5)] border-2 border-white/20 transition-all hover:scale-110 group pointer-events-auto"
         onClick={() => setCollapsed(false)}
+        title="唤醒 AI"
       >
-        AI
+        <Bot className="w-8 h-8 text-white group-hover:animate-pulse" />
       </button>
     );
   }
 
+  // --- 状态 2: 完整面板 ---
   return (
-    <div className="pointer-events-auto w-96 h-[70vh] p-4 rounded-3xl bg-slate-900/70 border border-white/10 shadow-xl shadow-cyan-500/20 backdrop-blur">
-      <div className="flex items-center justify-between mb-3 text-gray-100">
-        <div className="font-semibold">AI 指挥官</div>
+    <div className="pointer-events-auto w-[380px] h-[600px] flex flex-col bg-slate-950/90 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300">
+      
+      {/* 标题栏 */}
+      <div className="flex items-center justify-between px-5 py-4 bg-slate-900/50 border-b border-white/5">
+        <div className="flex items-center gap-2 text-blue-400 font-bold tracking-wide">
+          <Bot size={20} />
+          <span>地质 AI 助手</span>
+        </div>
         <button
-          className="text-sm text-gray-400 hover:text-white"
+          className="text-slate-400 hover:text-white p-1 rounded hover:bg-white/10 transition-colors"
           onClick={() => setCollapsed(true)}
+          title="最小化"
         >
-          最小化
+          <Minimize2 size={18} />
         </button>
       </div>
-      <div className="flex flex-col h-[calc(70vh-3.5rem)] gap-3">
+
+      {/* 内容区 */}
+      <div className="flex-1 flex flex-col p-4 min-h-0">
         <ChatHistory messages={history} />
         <ChatInput onSend={chat.sendMessage} loading={chat.loading} />
       </div>

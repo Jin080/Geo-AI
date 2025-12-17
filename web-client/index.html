@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Geo Explorer</title>
+    <!-- 【关键修复】手动指定 Cesium 静态资源路径 -->
+    <script>
+      window.CESIUM_BASE_URL = '/Cesium/';
+    </script>
   </head>
   <body class="bg-slate-950">
     <div id="root"></div>

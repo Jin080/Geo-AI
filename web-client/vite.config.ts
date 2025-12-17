@@ -2,11 +2,14 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import cesium from 'vite-plugin-cesium';
 import { fileURLToPath, URL } from 'node:url';
+import path from 'node:path';
 
 export default defineConfig({
+  // 【关键修复】告诉 Vite 去上一级目录(根目录)找 .env 文件
+  envDir: '..',
+  
   plugins: [
     react(),
-    // Copies Cesium static assets (Workers, Assets, Widgets) to the Vite dist output
     cesium()
   ],
   resolve: {
